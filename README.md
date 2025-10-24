@@ -1,344 +1,133 @@
-# Claude Skills Repository
+# Claude Skills
 
-A structured repository for developing, building, and distributing Claude Code skills.
+A collection of skills for [Claude Code](https://claude.com/claude-code) to enhance your development workflow.
 
-## Overview
+## Available Skills
 
-This repository provides:
-- Standardized structure for Claude skills
-- Build tooling for packaging skills
-- Multiple installation methods
-- Automated CI/CD for releases
+### blog-profile-analyzer
 
-## Repository Structure
+Analyzes blogs and publications to create comprehensive profiles of authors' perspectives, biases, political leanings, and worldviews.
 
-```
-claude-skills/
-├── skills/              # Individual skill directories
-│   └── skill-name/
-│       ├── skill.md           # Main skill prompt
-│       ├── manifest.json      # Metadata and versioning
-│       └── README.md          # Skill documentation
-├── scripts/             # Build and installation tools
-│   ├── build.sh              # Package skills into zips
-│   ├── install.sh            # CLI installer
-│   └── validate.sh           # Validate skill structure
-├── .github/workflows/   # CI/CD automation
-└── dist/                # Built packages (auto-generated)
-```
+**Use it for:**
+- Understanding a blog author's perspective and biases
+- Analyzing political leanings of publications
+- Comparing perspectives across different blogs
+- Critical reading and media literacy
 
-## Creating a New Skill
+[View Details](skills/blog-profile-analyzer/README.md) | [Download Latest](https://github.com/alecf/claude-skills/releases/latest/download/blog-profile-analyzer-latest.zip)
 
-### 1. Create Skill Directory
+## Installation
+
+### Quick Install (Recommended)
+
+Install any skill with a single command:
 
 ```bash
-mkdir -p skills/my-skill
+curl -sSL https://raw.githubusercontent.com/alecf/claude-skills/main/scripts/install.sh | bash -s SKILL_NAME
 ```
 
-### 2. Create skill.md
-
-Create `skills/my-skill/skill.md` with your skill's prompt:
-
-```markdown
-# My Skill
-
-Your skill instructions go here...
-```
-
-### 3. Create manifest.json
-
-Create `skills/my-skill/manifest.json`:
-
-```json
-{
-  "name": "my-skill",
-  "version": "1.0.0",
-  "description": "A brief description of what this skill does",
-  "author": "Your Name",
-  "keywords": ["keyword1", "keyword2"]
-}
-```
-
-**Important**: The `name` field must match the directory name.
-
-### 4. Create README.md (Optional but Recommended)
-
-Create `skills/my-skill/README.md` to document your skill:
-
-```markdown
-# My Skill
-
-## Description
-What does this skill do?
-
-## Usage
-How to use this skill...
-
-## Examples
-Example usage...
-```
-
-### 5. Validate Your Skill
-
+**Example:**
 ```bash
-./scripts/validate.sh my-skill
-```
-
-### 6. Build Your Skill
-
-```bash
-./scripts/build.sh my-skill
-```
-
-This creates:
-- `dist/my-skill/my-skill-v1.0.0.zip`
-- `dist/my-skill/my-skill-latest.zip`
-
-## Installing Skills
-
-### Method 1: CLI Installer (Recommended)
-
-**Local installation** (from this repository):
-```bash
-./scripts/install.sh my-skill
-```
-
-**Remote installation** (from GitHub):
-```bash
-curl -sSL https://raw.githubusercontent.com/USERNAME/claude-skills/main/scripts/install.sh | bash -s my-skill
+curl -sSL https://raw.githubusercontent.com/alecf/claude-skills/main/scripts/install.sh | bash -s blog-profile-analyzer
 ```
 
 Install multiple skills at once:
 ```bash
-./scripts/install.sh skill1 skill2 skill3
+curl -sSL https://raw.githubusercontent.com/alecf/claude-skills/main/scripts/install.sh | bash -s skill1 skill2 skill3
 ```
 
-### Method 2: Manual Download
+### Manual Installation
 
-1. Download the skill zip from GitHub Releases
+1. Download the skill zip from the [Releases](https://github.com/alecf/claude-skills/releases) page
 2. Extract the contents to `~/.claude/skills/`
 3. Restart Claude Desktop
 
-Example:
+**Example:**
 ```bash
 cd ~/.claude/skills
-unzip ~/Downloads/my-skill-v1.0.0.zip
+unzip ~/Downloads/blog-profile-analyzer-v1.0.0.zip
 ```
 
-## Updating a Skill
+### Using the Skills
 
-### 1. Make Your Changes
+After installation:
+1. Restart Claude Desktop
+2. The skills will be automatically available
+3. Claude will use them when appropriate, or you can invoke them explicitly
 
-Edit the skill files in `skills/my-skill/`
+## What Are Claude Skills?
 
-### 2. Update Version
+Skills are specialized prompts that give Claude Code additional capabilities for specific tasks. They provide:
 
-Update the version in `skills/my-skill/manifest.json`:
-
-```json
-{
-  "version": "1.1.0"
-}
-```
-
-Follow [Semantic Versioning](https://semver.org/):
-- `MAJOR.MINOR.PATCH`
-- MAJOR: Breaking changes
-- MINOR: New features (backward compatible)
-- PATCH: Bug fixes
-
-### 3. Commit and Push
-
-```bash
-git add skills/my-skill/
-git commit -m "Update my-skill to v1.1.0"
-git push
-```
-
-### 4. Automated Release
-
-When you push to `main`, GitHub Actions will:
-- Detect which skills changed
-- Validate the changes
-- Build the updated skills
-- Create a GitHub release with the new version
-- Commit the built packages to the `dist/` directory
-
-## Development Workflow
-
-### Local Development
-
-1. Create or modify skills in `skills/`
-2. Validate: `./scripts/validate.sh skill-name`
-3. Build: `./scripts/build.sh skill-name`
-4. Test locally: `./scripts/install.sh skill-name`
-5. Test in Claude Desktop
-
-### Publishing
-
-1. Update version in `manifest.json`
-2. Commit and push to `main`
-3. GitHub Actions automatically builds and releases
-
-## Build Scripts Reference
-
-### validate.sh
-
-Validates skill structure and manifest:
-
-```bash
-# Validate all skills
-./scripts/validate.sh
-
-# Validate specific skill
-./scripts/validate.sh my-skill
-```
-
-Checks:
-- Required files exist (skill.md, manifest.json)
-- Valid JSON syntax
-- Required manifest fields
-- Version format (semver)
-- Name matches directory
-
-### build.sh
-
-Packages skills into installable zips:
-
-```bash
-# Build all skills
-./scripts/build.sh
-
-# Build specific skill
-./scripts/build.sh my-skill
-```
-
-Creates:
-- `dist/skill-name/skill-name-vX.Y.Z.zip`
-- `dist/skill-name/skill-name-latest.zip`
-- `dist/skill-name/VERSION`
-
-### install.sh
-
-Installs skills to Claude Desktop:
-
-```bash
-# Install one skill
-./scripts/install.sh my-skill
-
-# Install multiple skills
-./scripts/install.sh skill1 skill2 skill3
-
-# Custom installation directory
-CLAUDE_SKILLS_DIR=/custom/path ./scripts/install.sh my-skill
-```
-
-## CI/CD Pipeline
-
-### Validation Workflow
-
-Runs on PRs and pushes to `main`:
-- Validates all changed skills
-- Builds skills to verify they package correctly
-- Uploads build artifacts for PR review
-
-### Release Workflow
-
-Runs on pushes to `main`:
-- Detects which skills were modified
-- Validates and builds changed skills
-- Creates GitHub releases with version tags
-- Attaches zip files to releases
-- Commits built packages to repository
+- **Focused expertise** - Deep knowledge for specific domains or tasks
+- **Consistent behavior** - Standardized approaches to common workflows
+- **Reusable solutions** - Share and install proven techniques
 
 ## Requirements
 
-### For Development
+- [Claude Desktop](https://claude.com/claude-code) installed
+- For CLI installation: `curl`, `unzip`, and `jq` installed
 
-- bash
-- jq (JSON processor)
-- zip/unzip
+**Install dependencies:**
 
-**Install on macOS:**
+**macOS:**
 ```bash
 brew install jq
 ```
 
-**Install on Ubuntu/Debian:**
+**Ubuntu/Debian:**
 ```bash
-sudo apt-get install jq zip unzip
+sudo apt-get install jq unzip curl
 ```
 
-### For CI/CD
-
-- GitHub repository with Actions enabled
-- No additional setup required (runs on Ubuntu)
-
-## Configuration
-
-### Environment Variables
-
-- `CLAUDE_SKILLS_DIR`: Installation directory (default: `~/.claude/skills`)
-- `CLAUDE_SKILLS_REPO`: Repository URL for remote installation
-
-### Repository Setup
-
-After creating skills, update `scripts/install.sh` line 8:
+**Fedora:**
 ```bash
-REPO_URL="${CLAUDE_SKILLS_REPO:-https://github.com/YOUR_USERNAME/claude-skills}"
-```
-
-## manifest.json Schema
-
-```json
-{
-  "name": "skill-name",           // Required: Must match directory name
-  "version": "1.0.0",             // Required: Semver format
-  "description": "...",           // Required: Brief description
-  "author": "Your Name",          // Optional: Author name
-  "license": "MIT",               // Optional: License
-  "homepage": "https://...",      // Optional: Homepage URL
-  "repository": "https://...",    // Optional: Source repository
-  "keywords": ["tag1", "tag2"],   // Optional: Search keywords
-  "dependencies": []              // Optional: Future use
-}
+sudo dnf install jq unzip curl
 ```
 
 ## Troubleshooting
 
-### Skill Not Found After Installation
+### Skill Not Appearing After Installation
 
-1. Check installation directory: `ls ~/.claude/skills/`
-2. Verify skill was extracted: `ls ~/.claude/skills/my-skill/`
-3. Restart Claude Desktop completely
+1. Verify installation: `ls ~/.claude/skills/`
+2. Check the skill directory exists: `ls ~/.claude/skills/SKILL_NAME/`
+3. Completely restart Claude Desktop (quit and reopen)
 
-### Build Fails
+### Installation Failed
 
-1. Run validation: `./scripts/validate.sh my-skill`
-2. Check manifest.json is valid JSON: `jq . skills/my-skill/manifest.json`
-3. Ensure version follows semver format: `X.Y.Z`
+1. Check you have the required dependencies: `jq --version`
+2. Verify the skill name is correct (see Available Skills above)
+3. Try manual installation instead
 
-### GitHub Actions Not Running
+### Skill Not Working as Expected
 
-1. Check Actions are enabled in repository settings
-2. Verify workflow files are in `.github/workflows/`
-3. Ensure changes are pushed to `main` branch
-4. Check workflow logs in Actions tab
+1. Check the skill's README for usage instructions: `cat ~/.claude/skills/SKILL_NAME/README.md`
+2. Verify you're using the latest version
+3. Try reinstalling: the installer will automatically replace the existing version
 
-## Examples
+## Uninstalling Skills
 
-See the `skills/` directory for example skills (once you add them).
+To remove a skill:
 
-## Contributing
+```bash
+rm -rf ~/.claude/skills/SKILL_NAME
+```
 
-When adding skills to this repository:
+Then restart Claude Desktop.
 
-1. Follow the skill structure guidelines
-2. Validate before committing
-3. Use semantic versioning
-4. Include a README.md with examples
-5. Test installation locally
+## Finding More Skills
+
+Browse all available skills in the [skills/](skills/) directory or check the [Releases](https://github.com/alecf/claude-skills/releases) page for the latest versions.
+
+## Contributing Your Own Skills
+
+Want to create and share your own skills? See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed instructions on creating, testing, and submitting skills to this repository.
+
+## Support
+
+- **Issues**: Report problems or request features via [GitHub Issues](https://github.com/alecf/claude-skills/issues)
+- **Discussions**: Ask questions or share ideas in [GitHub Discussions](https://github.com/alecf/claude-skills/discussions)
 
 ## License
 
-Specify your repository license here.
+Each skill may have its own license. See individual skill directories for details.

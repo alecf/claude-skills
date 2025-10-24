@@ -2,6 +2,37 @@
 
 Thank you for contributing to this skills repository! This guide will help you add or update skills.
 
+## Repository Overview
+
+This repository provides a structured system for developing, building, and distributing Claude Code skills with:
+
+- **Standardized structure** for skill organization
+- **Build tooling** for packaging skills
+- **Automated CI/CD** for releases
+- **Multiple installation methods** for users
+
+### Repository Structure
+
+```
+claude-skills/
+├── skills/              # Individual skill directories
+│   └── skill-name/
+│       ├── skill.md           # Main skill prompt
+│       ├── manifest.json      # Metadata and versioning
+│       └── README.md          # Skill documentation
+├── scripts/             # Build and installation tools
+│   ├── build.sh              # Package skills into zips
+│   ├── install.sh            # CLI installer
+│   ├── validate.sh           # Validate skill structure
+│   └── new-skill.sh          # Create skill template
+├── .github/workflows/   # CI/CD automation
+│   ├── validate.yml          # Validate on PRs
+│   └── release.yml           # Auto-release on changes
+├── README.md            # User-facing documentation
+├── CONTRIBUTING.md      # This file
+└── QUICKSTART.md        # Quick reference guide
+```
+
 ## Quick Start
 
 ### Creating a New Skill
@@ -226,6 +257,97 @@ Follow [Semantic Versioning](https://semver.org/):
 - Add relevant keywords to manifest.json
 - Help users discover your skill
 - Use common terminology
+
+## Build Scripts Reference
+
+### validate.sh
+
+Validates skill structure and manifest:
+
+```bash
+# Validate all skills
+./scripts/validate.sh
+
+# Validate specific skill
+./scripts/validate.sh my-skill
+```
+
+**Checks:**
+- Required files exist (skill.md, manifest.json)
+- Valid JSON syntax
+- Required manifest fields present
+- Version format (semver)
+- Name matches directory
+
+### build.sh
+
+Packages skills into installable zips:
+
+```bash
+# Build all skills
+./scripts/build.sh
+
+# Build specific skill
+./scripts/build.sh my-skill
+```
+
+**Creates:**
+- `dist/skill-name/skill-name-vX.Y.Z.zip` (versioned)
+- `dist/skill-name/skill-name-latest.zip` (for latest release)
+- `dist/skill-name/VERSION` (version tracking)
+
+**Note:** The `dist/` directory is gitignored. Built files are distributed via GitHub Releases.
+
+### install.sh
+
+Installs skills to Claude Desktop:
+
+```bash
+# Install one skill locally
+./scripts/install.sh my-skill
+
+# Install multiple skills
+./scripts/install.sh skill1 skill2 skill3
+
+# Custom installation directory
+CLAUDE_SKILLS_DIR=/custom/path ./scripts/install.sh my-skill
+```
+
+For local development, this installs from the `dist/` directory. For remote users, it downloads from GitHub Releases.
+
+### new-skill.sh
+
+Creates a new skill from template:
+
+```bash
+./scripts/new-skill.sh my-new-skill
+```
+
+Creates all required files with templates and placeholders.
+
+## CI/CD Pipeline
+
+### Validation Workflow (`.github/workflows/validate.yml`)
+
+**Triggers:** Pull requests and pushes to main affecting `skills/`
+
+**Actions:**
+1. Validates all changed skills
+2. Builds skills to verify packaging
+3. Uploads build artifacts for PR review
+
+### Release Workflow (`.github/workflows/release.yml`)
+
+**Triggers:** Pushes to main affecting `skills/`
+
+**Actions:**
+1. Detects which skills were modified
+2. Validates and builds changed skills
+3. Creates GitHub releases with version tags (`skill-name-vX.Y.Z`)
+4. Attaches zip files to releases
+5. Makes skills available for installation
+
+**Important:** The dist/ folder is never committed. All distribution happens through GitHub Releases.
 
 ## Common Validation Errors
 
