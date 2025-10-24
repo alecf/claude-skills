@@ -37,48 +37,69 @@ Analyzes blogs and publications to create comprehensive profiles of authors' per
 
 ## Installation Methods
 
-### Method 1: Via Claude Code Marketplace (Recommended)
+### For Claude Code Users
 
-This is the easiest way to install plugins directly from Claude Code.
+Claude Code supports multiple installation methods:
+
+#### Method 1: Via Marketplace (Recommended)
+
+This is the easiest way - install directly from Claude Code:
 
 **Step 1: Add the marketplace**
 ```
 /plugin marketplace add alecf/claude-skills
 ```
 
-**Step 2: Browse and install plugins**
+**Step 2: Install plugins**
 
-Option A - Interactive:
+Interactive browsing:
 ```
 /plugin
 ```
-Then browse the marketplace visually and install plugins.
 
-Option B - Direct install:
+Or direct install:
 ```
-/plugin install PLUGIN_NAME@alecf-claude-skills
+/plugin install blog-profile-analyzer@alecf-claude-skills
 ```
 
-### Method 2: Manual Download
+#### Method 2: Manual Plugin Installation
 
-If you prefer manual installation:
-
-1. Download the plugin zip from the [Releases](https://github.com/alecf/claude-skills/releases) page
+1. Download the **plugin** zip (`*-plugin-v*.zip`) from [Releases](https://github.com/alecf/claude-skills/releases)
 2. Extract to `~/.claude/plugins/`
 3. Restart Claude Desktop
 
 **Example:**
 ```bash
 cd ~/.claude/plugins
-unzip ~/Downloads/blog-profile-analyzer-v1.0.0.zip
+unzip ~/Downloads/blog-profile-analyzer-plugin-v1.0.0.zip
 ```
 
-### Method 3: Legacy CLI Installer
+#### Method 3: Manual Skill Installation
 
-For backward compatibility with the old skills system:
+You can also install just the skill without the full plugin:
 
+1. Download the **skill** zip (`*-skill-v*.zip`) from [Releases](https://github.com/alecf/claude-skills/releases)
+2. Extract to `~/.claude/skills/`
+3. Restart Claude Desktop
+
+**Example:**
 ```bash
-curl -sSL https://raw.githubusercontent.com/alecf/claude-skills/main/scripts/install.sh | bash -s PLUGIN_NAME
+cd ~/.claude/skills
+unzip ~/Downloads/blog-profile-analyzer-skill-v1.0.0.zip
+```
+
+### For Claude Desktop Users
+
+Claude Desktop only supports skill installation:
+
+1. Download the **skill** zip (`*-skill-v*.zip`) from [Releases](https://github.com/alecf/claude-skills/releases)
+2. Extract to `~/.claude/skills/`
+3. Restart Claude Desktop
+
+**Example:**
+```bash
+cd ~/.claude/skills
+unzip ~/Downloads/blog-profile-analyzer-skill-v1.0.0.zip
 ```
 
 ## Using the Plugins
@@ -98,6 +119,27 @@ Plugins extend Claude Code with:
 - **Hooks** - Event-driven automation
 
 This marketplace currently focuses on skills-based plugins, providing Claude with domain expertise for specialized tasks.
+
+## Understanding File Formats
+
+Each release includes two types of zip files:
+
+### Plugin Zips (`*-plugin-*.zip`)
+- **For:** Claude Code marketplace or manual plugin installation
+- **Contains:** Full plugin structure with `.claude-plugin/plugin.json`, skills, and metadata
+- **Install to:** `~/.claude/plugins/`
+- **Supports:** Claude Code only
+
+### Skill Zips (`*-skill-*.zip`)
+- **For:** Claude Desktop or manual skill installation in Claude Code
+- **Contains:** Just the skill folder with `SKILL.md`
+- **Install to:** `~/.claude/skills/`
+- **Supports:** Both Claude Desktop and Claude Code
+
+**Which should you use?**
+- **Claude Code users:** Use marketplace installation (recommended) or plugin zips
+- **Claude Desktop users:** Use skill zips (only option)
+- **Manual installation:** Either format works for Claude Code; skill zips work for both
 
 ## Requirements
 

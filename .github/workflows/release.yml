@@ -99,27 +99,47 @@ jobs:
 
           ## Installation
 
-          ### Via Claude Code Marketplace (Recommended)
+          ### Claude Code (Multiple Options)
+
+          **Option 1: Via Marketplace (Recommended)**
           \`\`\`
           /plugin marketplace add alecf/claude-skills
           /plugin install $PLUGIN_NAME@alecf-claude-skills
           \`\`\`
 
-          ### Manual Download
-          1. Download the \`${PLUGIN_NAME}-v${VERSION}.zip\` file below
+          **Option 2: Manual Plugin Installation**
+          1. Download \`${PLUGIN_NAME}-plugin-v${VERSION}.zip\`
           2. Extract to \`~/.claude/plugins/\`
           3. Restart Claude Desktop
+
+          **Option 3: Manual Skill Installation**
+          1. Download \`${PLUGIN_NAME}-skill-v${VERSION}.zip\`
+          2. Extract to \`~/.claude/skills/\`
+          3. Restart Claude Desktop
+
+          ### Claude Desktop
+
+          1. Download \`${PLUGIN_NAME}-skill-v${VERSION}.zip\`
+          2. Extract to \`~/.claude/skills/\`
+          3. Restart Claude Desktop
+
+          ## Files
+
+          - \`${PLUGIN_NAME}-plugin-*.zip\` - Full plugin (for Claude Code marketplace or manual plugin installation)
+          - \`${PLUGIN_NAME}-skill-*.zip\` - Skill only (for Claude Desktop or manual skill installation)
 
           ## Changelog
 
           See commit history for details.
           EOF
 
-          # Create release
+          # Create release with both plugin and skill zips
           gh release create "$RELEASE_TAG" \
             --title "$PLUGIN_NAME v$VERSION" \
             --notes-file release-notes.md \
-            dist/$PLUGIN_NAME/${PLUGIN_NAME}-v${VERSION}.zip \
-            dist/$PLUGIN_NAME/${PLUGIN_NAME}-latest.zip
+            dist/$PLUGIN_NAME/${PLUGIN_NAME}-plugin-v${VERSION}.zip \
+            dist/$PLUGIN_NAME/${PLUGIN_NAME}-plugin-latest.zip \
+            dist/$PLUGIN_NAME/${PLUGIN_NAME}-skill-v${VERSION}.zip \
+            dist/$PLUGIN_NAME/${PLUGIN_NAME}-skill-latest.zip
         env:
           GH_TOKEN: ${{ github.token }}

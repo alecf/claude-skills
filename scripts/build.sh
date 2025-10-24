@@ -79,19 +79,45 @@ build_plugin() {
 
     # Create temporary build directory
     local temp_dir=$(mktemp -d)
-    local build_dir="$temp_dir/$plugin_name"
-    mkdir -p "$build_dir"
 
-    # Copy entire plugin directory to build directory
-    cp -r "$plugin_dir"/* "$build_dir/"
-    cp -r "$plugin_dir"/.claude-plugin "$build_dir/"
+    # ===== Build 1: Full Plugin Zip (for Claude Code marketplace) =====
+    local plugin_build_dir="$temp_dir/plugin/$plugin_name"
+    mkdir -p "$plugin_build_dir"
 
-    # Create zip file
-    local zip_file="$plugin_dist_dir/${plugin_name}-v${version}.zip"
-    (cd "$temp_dir" && zip -r "$zip_file" "$plugin_name" -q)
+    # Copy entire plugin directory
+    cp -r "$plugin_dir"/* "$plugin_build_dir/"
+    cp -r "$plugin_dir"/.claude-plugin "$plugin_build_dir/"
 
-    # Create latest symlink/copy
-    cp "$zip_file" "$plugin_dist_dir/${plugin_name}-latest.zip"
+    # Create plugin zip file
+    local plugin_zip="$plugin_dist_dir/${plugin_name}-plugin-v${version}.zip"
+    (cd "$temp_dir/plugin" && zip -r "$plugin_zip" "$plugin_name" -q)
+    cp "$plugin_zip" "$plugin_dist_dir/${plugin_name}-plugin-latest.zip"
+
+    log_info "Built plugin zip: ${plugin_name}-plugin-v${version}.zip"
+
+    # ===== Build 2: Skill-only Zips (for Claude Desktop & manual installation) =====
+    # Check if plugin contains skills
+    if [ -d "$plugin_dir/skills" ]; then
+        for skill_dir in "$plugin_dir/skills"/*; do
+            if [ -d "$skill_dir" ]; then
+                local skill_name=$(basename "$skill_dir")
+                local skill_build_dir="$temp_dir/skills/$skill_name"
+                mkdir -p "$skill_build_dir"
+
+                # Copy only the SKILL.md file
+                if [ -f "$skill_dir/SKILL.md" ]; then
+                    cp "$skill_dir/SKILL.md" "$skill_build_dir/"
+
+                    # Create skill zip file
+                    local skill_zip="$plugin_dist_dir/${skill_name}-skill-v${version}.zip"
+                    (cd "$temp_dir/skills" && zip -r "$skill_zip" "$skill_name" -q)
+                    cp "$skill_zip" "$plugin_dist_dir/${skill_name}-skill-latest.zip"
+
+                    log_info "Built skill zip: ${skill_name}-skill-v${version}.zip"
+                fi
+            fi
+        done
+    fi
 
     # Save version info
     echo "$version" > "$plugin_dist_dir/VERSION"
@@ -99,7 +125,7 @@ build_plugin() {
     # Cleanup
     rm -rf "$temp_dir"
 
-    log_info "Built $plugin_name v$version -> $zip_file"
+    log_info "Build complete for $plugin_name v$version"
 
     return 0
 }
