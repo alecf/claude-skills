@@ -3,12 +3,12 @@
 # CLI installer for Claude skills
 # Usage:
 #   Direct: ./scripts/install.sh skill-name [skill-name2 ...]
-#   Remote: curl -sSL https://raw.githubusercontent.com/USERNAME/claude-skills/main/scripts/install.sh | bash -s skill-name
+#   Remote: curl -sSL https://raw.githubusercontent.com/alecf/claude-skills/main/scripts/install.sh | bash -s skill-name
 
 set -e
 
 # Configuration
-REPO_URL="${CLAUDE_SKILLS_REPO:-https://github.com/USERNAME/claude-skills}"
+REPO_URL="${CLAUDE_SKILLS_REPO:-https://github.com/alecf/claude-skills}"
 REPO_RAW_URL="${REPO_URL/github.com/raw.githubusercontent.com}/main"
 CLAUDE_SKILLS_DIR="${CLAUDE_SKILLS_DIR:-$HOME/.claude/skills}"
 
