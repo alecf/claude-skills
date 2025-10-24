@@ -1,0 +1,8 @@
+{
+  "name": "blog-profile-analyzer",
+  "version": "1.0.0",
+  "description": "Analyzes a blog or publication to create a comprehensive profile of the author's perspective, biases, political leanings, and worldview. Use this when asked to analyze, profile, or understand a blog author's viewpoint or when given a blog URL for analysis.",
+  "author": "",
+  "keywords": ["blog", "analysis", "profile", "perspective", "bias", "worldview", "political"],
+  "allowedTools": ["WebFetch", "WebSearch", "Write", "Read", "Bash"]
+}

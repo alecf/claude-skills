@@ -1,0 +1,145 @@
+name: Build and Release Skills
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'skills/**'
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      changed-skills: ${{ steps.changed.outputs.skills }}
+      has-changes: ${{ steps.changed.outputs.has-changes }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect changed skills
+        id: changed
+        run: |
+          # Get list of changed files in skills directory
+          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD -- skills/ || echo "")
+
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "has-changes=false" >> $GITHUB_OUTPUT
+            echo "skills=[]" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Extract unique skill names
+          SKILLS=$(echo "$CHANGED_FILES" | grep '^skills/' | cut -d'/' -f2 | sort -u | jq -R -s -c 'split("\n")[:-1]')
+
+          echo "Changed skills: $SKILLS"
+          echo "has-changes=true" >> $GITHUB_OUTPUT
+          echo "skills=$SKILLS" >> $GITHUB_OUTPUT
+
+  build-and-release:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.has-changes == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        skill: ${{ fromJson(needs.detect-changes.outputs.changed-skills) }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
+      - name: Validate skill
+        run: |
+          chmod +x scripts/validate.sh
+          ./scripts/validate.sh ${{ matrix.skill }}
+
+      - name: Build skill
+        run: |
+          chmod +x scripts/build.sh
+          ./scripts/build.sh ${{ matrix.skill }}
+
+      - name: Get skill version
+        id: version
+        run: |
+          VERSION=$(jq -r '.version' skills/${{ matrix.skill }}/manifest.json)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Building ${{ matrix.skill }} v$VERSION"
+
+      - name: Check if release exists
+        id: check-release
+        run: |
+          RELEASE_TAG="${{ matrix.skill }}-v${{ steps.version.outputs.version }}"
+          if gh release view "$RELEASE_TAG" &>/dev/null; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Release $RELEASE_TAG already exists"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "Release $RELEASE_TAG does not exist"
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Create GitHub Release
+        if: steps.check-release.outputs.exists == 'false'
+        run: |
+          SKILL_NAME="${{ matrix.skill }}"
+          VERSION="${{ steps.version.outputs.version }}"
+          RELEASE_TAG="${SKILL_NAME}-v${VERSION}"
+
+          # Get description from manifest
+          DESCRIPTION=$(jq -r '.description' skills/$SKILL_NAME/manifest.json)
+
+          # Create release notes
+          cat > release-notes.md << EOF
+          # $SKILL_NAME v$VERSION
+
+          $DESCRIPTION
+
+          ## Installation
+
+          ### Method 1: CLI Installer (Recommended)
+          \`\`\`bash
+          curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/main/scripts/install.sh | bash -s $SKILL_NAME
+          \`\`\`
+
+          ### Method 2: Manual Download
+          1. Download the \`${SKILL_NAME}-v${VERSION}.zip\` file below
+          2. Extract to \`~/.claude/skills/\`
+          3. Restart Claude Desktop
+
+          ## Changelog
+
+          See commit history for details.
+          EOF
+
+          # Create release
+          gh release create "$RELEASE_TAG" \
+            --title "$SKILL_NAME v$VERSION" \
+            --notes-file release-notes.md \
+            dist/$SKILL_NAME/${SKILL_NAME}-v${VERSION}.zip \
+            dist/$SKILL_NAME/${SKILL_NAME}-latest.zip
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Commit dist files
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          # Add dist files for this skill
+          git add -f dist/${{ matrix.skill }}/
+
+          # Commit if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Build: ${{ matrix.skill }} v${{ steps.version.outputs.version }}"
+            git push
+          fi
