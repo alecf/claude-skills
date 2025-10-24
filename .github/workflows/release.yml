@@ -1,17 +1,17 @@
-name: Build and Release Skills
+name: Build and Release Plugins
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'skills/**'
+      - 'plugins/**'
 
 jobs:
   detect-changes:
     runs-on: ubuntu-latest
     outputs:
-      changed-skills: ${{ steps.changed.outputs.skills }}
+      changed-plugins: ${{ steps.changed.outputs.plugins }}
       has-changes: ${{ steps.changed.outputs.has-changes }}
     steps:
       - name: Checkout code
@@ -19,24 +19,24 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Detect changed skills
+      - name: Detect changed plugins
         id: changed
         run: |
-          # Get list of changed files in skills directory
-          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD -- skills/ || echo "")
+          # Get list of changed files in plugins directory
+          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD -- plugins/ || echo "")
 
           if [ -z "$CHANGED_FILES" ]; then
             echo "has-changes=false" >> $GITHUB_OUTPUT
-            echo "skills=[]" >> $GITHUB_OUTPUT
+            echo "plugins=[]" >> $GITHUB_OUTPUT
             exit 0
           fi
 
-          # Extract unique skill names
-          SKILLS=$(echo "$CHANGED_FILES" | grep '^skills/' | cut -d'/' -f2 | sort -u | jq -R -s -c 'split("\n")[:-1]')
+          # Extract unique plugin names
+          PLUGINS=$(echo "$CHANGED_FILES" | grep '^plugins/' | cut -d'/' -f2 | sort -u | jq -R -s -c 'split("\n")[:-1]')
 
-          echo "Changed skills: $SKILLS"
+          echo "Changed plugins: $PLUGINS"
           echo "has-changes=true" >> $GITHUB_OUTPUT
-          echo "skills=$SKILLS" >> $GITHUB_OUTPUT
+          echo "plugins=$PLUGINS" >> $GITHUB_OUTPUT
 
   build-and-release:
     needs: detect-changes
@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        skill: ${{ fromJson(needs.detect-changes.outputs.changed-skills) }}
+        plugin: ${{ fromJson(needs.detect-changes.outputs.changed-plugins) }}
 
     steps:
       - name: Checkout code
@@ -55,27 +55,22 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y jq
 
-      - name: Validate skill
-        run: |
-          chmod +x scripts/validate.sh
-          ./scripts/validate.sh ${{ matrix.skill }}
-
-      - name: Build skill
+      - name: Build plugin
         run: |
           chmod +x scripts/build.sh
-          ./scripts/build.sh ${{ matrix.skill }}
+          ./scripts/build.sh ${{ matrix.plugin }}
 
-      - name: Get skill version
+      - name: Get plugin version
         id: version
         run: |
-          VERSION=$(jq -r '.version' skills/${{ matrix.skill }}/manifest.json)
+          VERSION=$(jq -r '.version' plugins/${{ matrix.plugin }}/.claude-plugin/plugin.json)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Building ${{ matrix.skill }} v$VERSION"
+          echo "Building ${{ matrix.plugin }} v$VERSION"
 
       - name: Check if release exists
         id: check-release
         run: |
-          RELEASE_TAG="${{ matrix.skill }}-v${{ steps.version.outputs.version }}"
+          RELEASE_TAG="${{ matrix.plugin }}-v${{ steps.version.outputs.version }}"
           if gh release view "$RELEASE_TAG" &>/dev/null; then
             echo "exists=true" >> $GITHUB_OUTPUT
             echo "Release $RELEASE_TAG already exists"
@@ -89,29 +84,30 @@ jobs:
       - name: Create GitHub Release
         if: steps.check-release.outputs.exists == 'false'
         run: |
-          SKILL_NAME="${{ matrix.skill }}"
+          PLUGIN_NAME="${{ matrix.plugin }}"
           VERSION="${{ steps.version.outputs.version }}"
-          RELEASE_TAG="${SKILL_NAME}-v${VERSION}"
+          RELEASE_TAG="${PLUGIN_NAME}-v${VERSION}"
 
-          # Get description from manifest
-          DESCRIPTION=$(jq -r '.description' skills/$SKILL_NAME/manifest.json)
+          # Get description from plugin.json
+          DESCRIPTION=$(jq -r '.description' plugins/$PLUGIN_NAME/.claude-plugin/plugin.json)
 
           # Create release notes
           cat > release-notes.md << EOF
-          # $SKILL_NAME v$VERSION
+          # $PLUGIN_NAME v$VERSION
 
           $DESCRIPTION
 
           ## Installation
 
-          ### Method 1: CLI Installer (Recommended)
-          \`\`\`bash
-          curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/main/scripts/install.sh | bash -s $SKILL_NAME
+          ### Via Claude Code Marketplace (Recommended)
+          \`\`\`
+          /plugin marketplace add alecf/claude-skills
+          /plugin install $PLUGIN_NAME@alecf-claude-skills
           \`\`\`
 
-          ### Method 2: Manual Download
-          1. Download the \`${SKILL_NAME}-v${VERSION}.zip\` file below
-          2. Extract to \`~/.claude/skills/\`
+          ### Manual Download
+          1. Download the \`${PLUGIN_NAME}-v${VERSION}.zip\` file below
+          2. Extract to \`~/.claude/plugins/\`
           3. Restart Claude Desktop
 
           ## Changelog
@@ -121,9 +117,9 @@ jobs:
 
           # Create release
           gh release create "$RELEASE_TAG" \
-            --title "$SKILL_NAME v$VERSION" \
+            --title "$PLUGIN_NAME v$VERSION" \
             --notes-file release-notes.md \
-            dist/$SKILL_NAME/${SKILL_NAME}-v${VERSION}.zip \
-            dist/$SKILL_NAME/${SKILL_NAME}-latest.zip
+            dist/$PLUGIN_NAME/${PLUGIN_NAME}-v${VERSION}.zip \
+            dist/$PLUGIN_NAME/${PLUGIN_NAME}-latest.zip
         env:
           GH_TOKEN: ${{ github.token }}

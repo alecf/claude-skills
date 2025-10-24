@@ -1,14 +1,14 @@
-name: Validate Skills
+name: Validate Plugins
 
 on:
   pull_request:
     paths:
-      - 'skills/**'
+      - 'plugins/**'
   push:
     branches:
       - main
     paths:
-      - 'skills/**'
+      - 'plugins/**'
 
 jobs:
   validate:
@@ -23,12 +23,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y jq
 
-      - name: Validate all skills
-        run: |
-          chmod +x scripts/validate.sh
-          ./scripts/validate.sh
-
-      - name: Build all skills
+      - name: Build all plugins
         run: |
           chmod +x scripts/build.sh
           ./scripts/build.sh
@@ -37,6 +32,6 @@ jobs:
         if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
-          name: skill-builds
+          name: plugin-builds
           path: dist/
           retention-days: 7

@@ -1,8 +1,22 @@
-# Claude Skills
+# Claude Skills Marketplace
 
-A collection of skills for [Claude Code](https://claude.com/claude-code) to enhance your development workflow.
+A curated marketplace of plugins for [Claude Code](https://claude.com/claude-code) to enhance your development workflow.
 
-## Available Skills
+## Quick Start
+
+Add this marketplace to Claude Code:
+
+```
+/plugin marketplace add alecf/claude-skills
+```
+
+Then install any plugin:
+
+```
+/plugin install blog-profile-analyzer@alecf-claude-skills
+```
+
+## Available Plugins
 
 ### blog-profile-analyzer
 
@@ -14,61 +28,84 @@ Analyzes blogs and publications to create comprehensive profiles of authors' per
 - Comparing perspectives across different blogs
 - Critical reading and media literacy
 
-[View Details](skills/blog-profile-analyzer/README.md) | [Download Latest](https://github.com/alecf/claude-skills/releases/latest/download/blog-profile-analyzer-latest.zip)
-
-## Installation
-
-### Quick Install (Recommended)
-
-Install any skill with a single command:
-
-```bash
-curl -sSL https://raw.githubusercontent.com/alecf/claude-skills/main/scripts/install.sh | bash -s SKILL_NAME
+**Install:**
+```
+/plugin install blog-profile-analyzer@alecf-claude-skills
 ```
 
-**Example:**
-```bash
-curl -sSL https://raw.githubusercontent.com/alecf/claude-skills/main/scripts/install.sh | bash -s blog-profile-analyzer
+[View Details](plugins/blog-profile-analyzer/README.md) | [Download Latest](https://github.com/alecf/claude-skills/releases/latest/download/blog-profile-analyzer-latest.zip)
+
+## Installation Methods
+
+### Method 1: Via Claude Code Marketplace (Recommended)
+
+This is the easiest way to install plugins directly from Claude Code.
+
+**Step 1: Add the marketplace**
+```
+/plugin marketplace add alecf/claude-skills
 ```
 
-Install multiple skills at once:
-```bash
-curl -sSL https://raw.githubusercontent.com/alecf/claude-skills/main/scripts/install.sh | bash -s skill1 skill2 skill3
+**Step 2: Browse and install plugins**
+
+Option A - Interactive:
+```
+/plugin
+```
+Then browse the marketplace visually and install plugins.
+
+Option B - Direct install:
+```
+/plugin install PLUGIN_NAME@alecf-claude-skills
 ```
 
-### Manual Installation
+### Method 2: Manual Download
 
-1. Download the skill zip from the [Releases](https://github.com/alecf/claude-skills/releases) page
-2. Extract the contents to `~/.claude/skills/`
+If you prefer manual installation:
+
+1. Download the plugin zip from the [Releases](https://github.com/alecf/claude-skills/releases) page
+2. Extract to `~/.claude/plugins/`
 3. Restart Claude Desktop
 
 **Example:**
 ```bash
-cd ~/.claude/skills
+cd ~/.claude/plugins
 unzip ~/Downloads/blog-profile-analyzer-v1.0.0.zip
 ```
 
-### Using the Skills
+### Method 3: Legacy CLI Installer
+
+For backward compatibility with the old skills system:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/alecf/claude-skills/main/scripts/install.sh | bash -s PLUGIN_NAME
+```
+
+## Using the Plugins
 
 After installation:
-1. Restart Claude Desktop
-2. The skills will be automatically available
-3. Claude will use them when appropriate, or you can invoke them explicitly
+1. Restart Claude Desktop (if installed manually)
+2. Plugins are automatically available
+3. Skills within plugins activate automatically when relevant
 
-## What Are Claude Skills?
+## What Are Claude Plugins?
 
-Skills are specialized prompts that give Claude Code additional capabilities for specific tasks. They provide:
+Plugins extend Claude Code with:
 
-- **Focused expertise** - Deep knowledge for specific domains or tasks
-- **Consistent behavior** - Standardized approaches to common workflows
-- **Reusable solutions** - Share and install proven techniques
+- **Skills** - Specialized prompts for specific tasks
+- **Commands** - Custom slash commands
+- **Agents** - Autonomous task handlers
+- **Hooks** - Event-driven automation
+
+This marketplace currently focuses on skills-based plugins, providing Claude with domain expertise for specialized tasks.
 
 ## Requirements
 
 - [Claude Desktop](https://claude.com/claude-code) installed
-- For CLI installation: `curl`, `unzip`, and `jq` installed
+- For manual installation: `unzip` utility
+- For CLI installation: `curl`, `unzip`, and `jq`
 
-**Install dependencies:**
+**Install CLI dependencies:**
 
 **macOS:**
 ```bash
@@ -87,47 +124,64 @@ sudo dnf install jq unzip curl
 
 ## Troubleshooting
 
-### Skill Not Appearing After Installation
+### Marketplace Not Found
 
-1. Verify installation: `ls ~/.claude/skills/`
-2. Check the skill directory exists: `ls ~/.claude/skills/SKILL_NAME/`
-3. Completely restart Claude Desktop (quit and reopen)
+Make sure you've added the marketplace correctly:
+```
+/plugin marketplace add alecf/claude-skills
+```
+
+You can verify it's added with:
+```
+/plugin marketplace list
+```
+
+### Plugin Not Appearing After Installation
+
+1. Verify installation:
+   - Via marketplace: `/plugin list`
+   - Manual: `ls ~/.claude/plugins/`
+2. Completely restart Claude Desktop (quit and reopen)
+3. Try reinstalling via the marketplace
 
 ### Installation Failed
 
-1. Check you have the required dependencies: `jq --version`
-2. Verify the skill name is correct (see Available Skills above)
+1. Check you're using the correct plugin name
+2. Verify the marketplace is added: `/plugin marketplace list`
 3. Try manual installation instead
 
-### Skill Not Working as Expected
+## Finding More Plugins
 
-1. Check the skill's README for usage instructions: `cat ~/.claude/skills/SKILL_NAME/README.md`
-2. Verify you're using the latest version
-3. Try reinstalling: the installer will automatically replace the existing version
+- Browse all plugins in the [plugins/](plugins/) directory
+- Check the [Releases](https://github.com/alecf/claude-skills/releases) page for versions
+- Use `/plugin` in Claude Code to browse visually
 
-## Uninstalling Skills
+## Contributing Your Own Plugins
 
-To remove a skill:
+Want to create and share your own plugins? See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed instructions on creating, testing, and submitting plugins to this marketplace.
 
-```bash
-rm -rf ~/.claude/skills/SKILL_NAME
+## Team Configuration
+
+Organizations can pre-configure this marketplace for their teams by adding it to `.claude/settings.json`:
+
+```json
+{
+  "extraKnownMarketplaces": [
+    {
+      "github": "alecf/claude-skills"
+    }
+  ]
+}
 ```
 
-Then restart Claude Desktop.
-
-## Finding More Skills
-
-Browse all available skills in the [skills/](skills/) directory or check the [Releases](https://github.com/alecf/claude-skills/releases) page for the latest versions.
-
-## Contributing Your Own Skills
-
-Want to create and share your own skills? See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed instructions on creating, testing, and submitting skills to this repository.
+When team members trust the folder, Claude Code automatically installs the marketplace.
 
 ## Support
 
 - **Issues**: Report problems or request features via [GitHub Issues](https://github.com/alecf/claude-skills/issues)
 - **Discussions**: Ask questions or share ideas in [GitHub Discussions](https://github.com/alecf/claude-skills/discussions)
+- **Documentation**: [Claude Code Plugin Docs](https://docs.claude.com/en/docs/claude-code/plugins)
 
 ## License
 
-Each skill may have its own license. See individual skill directories for details.
+Each plugin may have its own license. See individual plugin directories for details.
