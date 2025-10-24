@@ -111,17 +111,17 @@ install_skill_local() {
 install_skill_remote() {
     local skill_name=$1
 
-    log_step "Installing $skill_name from remote repository..."
+    log_step "Installing $skill_name from GitHub releases..."
 
-    # Download the latest zip
-    local download_url="$REPO_RAW_URL/dist/$skill_name/${skill_name}-latest.zip"
+    # Download the latest zip from GitHub releases
+    local download_url="https://github.com/alecf/claude-skills/releases/latest/download/${skill_name}-latest.zip"
     local temp_file=$(mktemp)
 
     log_info "Downloading from $download_url..."
 
     if ! curl -fsSL "$download_url" -o "$temp_file"; then
         log_error "Failed to download $skill_name"
-        log_error "Make sure the skill exists and has been built"
+        log_error "Make sure the skill exists and has a release"
         rm -f "$temp_file"
         return 1
     fi
