@@ -7,10 +7,12 @@
   "plugins": [
     {
       "name": "blog-profile-analyzer",
-      "source": "plugins/blog-profile-analyzer",
+      "source": "./plugins/blog-profile-analyzer",
       "description": "Analyzes blogs and publications to create comprehensive profiles of authors' perspectives, biases, political leanings, and worldviews",
       "version": "1.0.0",
-      "author": "Alec Flett",
+      "author": {
+        "name": "Alec Flett"
+      },
       "keywords": ["blog", "analysis", "profile", "perspective", "bias", "worldview", "political"]
     }
   ]
