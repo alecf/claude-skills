@@ -143,26 +143,8 @@ Each release includes two types of zip files:
 
 ## Requirements
 
-- [Claude Desktop](https://claude.com/claude-code) installed
-- For manual installation: `unzip` utility
-- For CLI installation: `curl`, `unzip`, and `jq`
-
-**Install CLI dependencies:**
-
-**macOS:**
-```bash
-brew install jq
-```
-
-**Ubuntu/Debian:**
-```bash
-sudo apt-get install jq unzip curl
-```
-
-**Fedora:**
-```bash
-sudo dnf install jq unzip curl
-```
+- [Claude Desktop](https://claude.com/claude-code) installed (Claude Code for marketplace support)
+- For manual installation: `unzip` utility (usually pre-installed)
 
 ## Troubleshooting
 

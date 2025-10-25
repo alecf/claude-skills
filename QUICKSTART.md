@@ -1,69 +1,91 @@
 # Quick Start Guide
 
-Get started with Claude skills in 5 minutes.
+Get started with Claude plugins in 5 minutes.
 
-## For Skill Users
+## For Plugin Users
 
-### Install a Skill
+### Install via Marketplace (Recommended)
 
-**Option 1: CLI Installer**
-```bash
-curl -sSL https://raw.githubusercontent.com/USERNAME/claude-skills/main/scripts/install.sh | bash -s skill-name
+**Claude Code only:**
+
+```
+/plugin marketplace add alecf/claude-skills
+/plugin install blog-profile-analyzer@alecf-claude-skills
 ```
 
-**Option 2: Manual**
-1. Download skill zip from [Releases](../../releases)
-2. Extract to `~/.claude/skills/`
-3. Restart Claude Desktop
+### Install Manually
+
+**Claude Code:**
+```bash
+# Download plugin zip
+cd ~/.claude/plugins
+unzip ~/Downloads/blog-profile-analyzer-plugin-v1.0.0.zip
+```
+
+**Claude Desktop (or Claude Code):**
+```bash
+# Download skill zip
+cd ~/.claude/skills
+unzip ~/Downloads/blog-profile-analyzer-skill-v1.0.0.zip
+```
 
 ### Verify Installation
 
-```bash
-ls ~/.claude/skills/
+**Via marketplace:**
+```
+/plugin list
 ```
 
-You should see your skill directory there.
+**Manual:**
+```bash
+ls ~/.claude/plugins/  # or ~/.claude/skills/
+```
 
-## For Skill Developers
+## For Plugin Developers
 
-### 1. Create a New Skill
+### 1. Create a New Plugin
 
 ```bash
-./scripts/new-skill.sh my-skill
+./scripts/new-skill.sh my-plugin
 ```
 
 ### 2. Edit the Files
 
-**skills/my-skill/skill.md** - Your skill's prompt:
+**plugins/my-plugin/.claude-plugin/plugin.json** - Plugin metadata:
+```json
+{
+  "name": "my-plugin",
+  "version": "1.0.0",
+  "description": "What this plugin does",
+  "author": {
+    "name": "Your Name"
+  }
+}
+```
+
+**plugins/my-plugin/skills/my-skill/SKILL.md** - Your skill's prompt:
 ```markdown
 # My Skill
 
 Instructions for Claude to follow when using this skill...
 ```
 
-**skills/my-skill/manifest.json** - Metadata:
-```json
-{
-  "name": "my-skill",
-  "version": "1.0.0",
-  "description": "What this skill does"
-}
-```
-
-### 3. Test It
+### 3. Build and Test
 
 ```bash
-# Validate
-./scripts/validate.sh my-skill
+# Build (creates both plugin and skill zips)
+./scripts/build.sh my-plugin
 
-# Build
-./scripts/build.sh my-skill
+# Test as plugin (Claude Code)
+cd ~/.claude/plugins
+unzip /path/to/dist/my-plugin/my-plugin-plugin-latest.zip
 
-# Install locally
-./scripts/install.sh my-skill
+# Or test as skill (Claude Desktop/Code)
+cd ~/.claude/skills
+unzip /path/to/dist/my-plugin/my-plugin-skill-latest.zip
 ```
 
-### 4. Try It in Claude Desktop
+### 4. Try It
 
 1. Restart Claude Desktop
 2. Use your skill
@@ -72,69 +94,67 @@ Instructions for Claude to follow when using this skill...
 ### 5. Publish It
 
 ```bash
-# Update version if needed
-# Edit skills/my-skill/manifest.json
+# Update version in plugins/my-plugin/.claude-plugin/plugin.json
 
 # Commit and push
-git add skills/my-skill/
-git commit -m "Add my-skill v1.0.0"
+git add plugins/my-plugin/
+git commit -m "Add my-plugin v1.0.0"
 git push
 ```
 
 GitHub Actions will automatically:
-- Validate your skill
-- Build the package
+- Build both plugin and skill zips
 - Create a release
-- Make it available for installation
+- Make it available via marketplace and downloads
 
 ## Common Commands
 
 ```bash
-# Create new skill
-./scripts/new-skill.sh skill-name
+# Create new plugin
+./scripts/new-skill.sh plugin-name
 
-# Validate skill
-./scripts/validate.sh skill-name
+# Build plugin (creates both formats)
+./scripts/build.sh plugin-name
 
-# Build skill
-./scripts/build.sh skill-name
-
-# Install skill locally
-./scripts/install.sh skill-name
-
-# Build all skills
+# Build all plugins
 ./scripts/build.sh
-
-# Validate all skills
-./scripts/validate.sh
 ```
 
 ## Directory Structure
 
 ```
-skills/my-skill/
-├── skill.md        # The skill prompt (required)
-├── manifest.json   # Metadata (required)
-└── README.md       # Documentation (recommended)
+plugins/my-plugin/
+├── .claude-plugin/
+│   └── plugin.json           # Plugin metadata (required)
+├── skills/
+│   └── my-skill/
+│       └── SKILL.md          # Skill prompt (required)
+└── README.md                 # Documentation (recommended)
 ```
+
+## File Formats
+
+Each build creates two zips:
+- `*-plugin-*.zip` - Full plugin (for Claude Code marketplace)
+- `*-skill-*.zip` - Skill only (for Claude Desktop)
 
 ## Need Help?
 
 - Read the full [README.md](README.md)
 - Check [CONTRIBUTING.md](CONTRIBUTING.md) for details
-- Look at existing skills for examples
+- Look at existing plugins for examples
 - Open an issue with questions
 
 ## Pro Tips
 
-1. **Use the helper script**: `./scripts/new-skill.sh` creates all files
-2. **Validate early**: Run `./scripts/validate.sh` often
-3. **Test locally first**: Always test before pushing
-4. **Follow semver**: Use proper version numbers (1.0.0, 1.1.0, etc.)
-5. **Write good docs**: Future you will thank you
+1. **Use the marketplace**: Easiest way to install in Claude Code
+2. **Test locally first**: Build and install before pushing
+3. **Follow semver**: Use proper version numbers (1.0.0, 1.1.0, etc.)
+4. **Write good docs**: Include clear usage examples
+5. **Both formats**: Each release includes plugin and skill zips
 
 ## What's Next?
 
-- Explore existing skills in `skills/`
+- Explore existing plugins in `plugins/`
 - Read the [CONTRIBUTING.md](CONTRIBUTING.md) guide
-- Check out the [README.md](README.md) for advanced features
+- Check out the [README.md](README.md) for installation options

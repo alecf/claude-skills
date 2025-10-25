@@ -8,7 +8,11 @@
       "Bash(./scripts/validate.sh:*)",
       "Bash(./scripts/build.sh:*)",
       "Bash(git add:*)",
-      "Bash(unzip:*)"
+      "Bash(unzip:*)",
+      "Bash(dist/blog-profile-analyzer/blog-profile-analyzer-plugin-v1.0.0.zip )",
+      "Bash(dist/blog-profile-analyzer/blog-profile-analyzer-plugin-latest.zip )",
+      "Bash(dist/blog-profile-analyzer/blog-profile-analyzer-skill-v1.0.0.zip )",
+      "Bash(dist/blog-profile-analyzer/blog-profile-analyzer-skill-latest.zip)"
     ],
     "deny": [],
     "ask": []

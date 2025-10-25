@@ -15,15 +15,19 @@ This repository provides a structured system for developing, building, and distr
 
 ```
 claude-skills/
-├── skills/              # Individual skill directories
-│   └── skill-name/
-│       ├── skill.md           # Main skill prompt
-│       ├── manifest.json      # Metadata and versioning
-│       └── README.md          # Skill documentation
-├── scripts/             # Build and installation tools
-│   ├── build.sh              # Package skills into zips
-│   ├── install.sh            # CLI installer
-│   ├── validate.sh           # Validate skill structure
+├── .claude-plugin/
+│   └── marketplace.json       # Marketplace manifest
+├── plugins/             # Individual plugin directories
+│   └── plugin-name/
+│       ├── .claude-plugin/
+│       │   └── plugin.json    # Plugin metadata
+│       ├── skills/
+│       │   └── skill-name/
+│       │       └── SKILL.md   # Skill prompt
+│       └── README.md          # Plugin documentation
+├── scripts/             # Build tools
+│   ├── build.sh              # Package plugins and skills into zips
+│   ├── validate.sh           # Validate plugin structure
 │   └── new-skill.sh          # Create skill template
 ├── .github/workflows/   # CI/CD automation
 │   ├── validate.yml          # Validate on PRs
@@ -114,24 +118,24 @@ Concrete examples of the skill in action.
 
 ## Validation
 
-Before committing, validate your skill:
+Before committing, validate and build your plugin:
 
 ```bash
-# Validate structure and syntax
-./scripts/validate.sh my-skill-name
-
-# Build to test packaging
-./scripts/build.sh my-skill-name
-
-# Install locally to test
-./scripts/install.sh my-skill-name
+# Build to test packaging (also validates)
+./scripts/build.sh my-plugin-name
 ```
 
 ## Testing
 
-1. **Local Testing**: Install the skill in Claude Desktop
+1. **Local Testing**: Install the plugin/skill manually
    ```bash
-   ./scripts/install.sh my-skill-name
+   # Option 1: Install as plugin (Claude Code)
+   cd ~/.claude/plugins
+   unzip /path/to/dist/my-plugin/my-plugin-plugin-latest.zip
+
+   # Option 2: Install as skill (Claude Desktop or Claude Code)
+   cd ~/.claude/skills
+   unzip /path/to/dist/my-plugin/my-plugin-skill-latest.zip
    ```
 
 2. **Restart Claude Desktop**: Required for skills to load
@@ -219,11 +223,10 @@ Follow [Semantic Versioning](https://semver.org/):
    - Fixed issue Y
    ```
 
-4. **Validate and test**
+4. **Build and test**
    ```bash
-   ./scripts/validate.sh skill-name
-   ./scripts/build.sh skill-name
-   ./scripts/install.sh skill-name
+   ./scripts/build.sh plugin-name
+   # Then manually install to test (see Testing section above)
    ```
 
 5. **Commit with descriptive message**
@@ -298,22 +301,7 @@ Packages skills into installable zips:
 
 **Note:** The `dist/` directory is gitignored. Built files are distributed via GitHub Releases.
 
-### install.sh
-
-Installs skills to Claude Desktop:
-
-```bash
-# Install one skill locally
-./scripts/install.sh my-skill
-
-# Install multiple skills
-./scripts/install.sh skill1 skill2 skill3
-
-# Custom installation directory
-CLAUDE_SKILLS_DIR=/custom/path ./scripts/install.sh my-skill
-```
-
-For local development, this installs from the `dist/` directory. For remote users, it downloads from GitHub Releases.
+**Testing builds:** After building, manually unzip the generated files to `~/.claude/plugins/` or `~/.claude/skills/` to test.
 
 ### new-skill.sh
 
