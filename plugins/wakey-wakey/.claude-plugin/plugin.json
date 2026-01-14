@@ -1,0 +1,20 @@
+{
+  "name": "wakey-wakey",
+  "version": "1.0.0",
+  "description": "Keeps your Mac awake during Claude Code sessions by running caffeinate after every tool use",
+  "author": "Alec Flett",
+  "keywords": ["macos", "caffeinate", "sleep", "awake", "productivity"],
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pkill -x caffeinate; (caffeinate -u -t 300 >/dev/null 2>&1 &)"
+          }
+        ]
+      }
+    ]
+  }
+}
