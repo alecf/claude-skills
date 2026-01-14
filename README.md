@@ -35,6 +35,29 @@ Analyzes blogs and publications to create comprehensive profiles of authors' per
 
 [View Details](plugins/blog-profile-analyzer/README.md) | [Download Latest](https://github.com/alecf/claude-skills/releases/latest/download/blog-profile-analyzer-latest.zip)
 
+---
+
+### wakey-wakey
+
+Keeps your Mac awake during Claude Code sessions by running `caffeinate` after every tool use.
+
+**Use it for:**
+- Preventing Mac sleep during long-running tasks
+- Keeping your display active while Claude works
+- Avoiding interrupted sessions due to system sleep
+
+**How it works:**
+- Adds a `PostToolUse` hook that runs after every tool invocation
+- Uses macOS's built-in `caffeinate` command with a 5-minute timeout
+- Each tool use resets the timer, so your Mac stays awake during active sessions
+
+**Install:**
+```
+/plugin install wakey-wakey@alecf-claude-skills
+```
+
+[View Details](plugins/wakey-wakey/README.md) | [Download Latest](https://github.com/alecf/claude-skills/releases/latest/download/wakey-wakey-latest.zip)
+
 ## Installation Methods
 
 ### For Claude Code Users
