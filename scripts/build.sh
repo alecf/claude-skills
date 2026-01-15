@@ -147,9 +147,9 @@ main() {
         for plugin_dir in "$PLUGINS_DIR"/*; do
             if [ -d "$plugin_dir" ] && [ "$(basename "$plugin_dir")" != ".*" ]; then
                 if build_plugin "$plugin_dir"; then
-                    ((success_count++))
+                    ((success_count++)) || true
                 else
-                    ((fail_count++))
+                    ((fail_count++)) || true
                 fi
             fi
         done

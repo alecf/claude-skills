@@ -91,8 +91,15 @@ jobs:
           # Get description from plugin.json
           DESCRIPTION=$(jq -r '.description' plugins/$PLUGIN_NAME/.claude-plugin/plugin.json)
 
+          # Check if skill zips exist
+          HAS_SKILLS="false"
+          if [ -f "dist/$PLUGIN_NAME/${PLUGIN_NAME}-skill-v${VERSION}.zip" ]; then
+            HAS_SKILLS="true"
+          fi
+
           # Create release notes
-          cat > release-notes.md << EOF
+          if [ "$HAS_SKILLS" = "true" ]; then
+            cat > release-notes.md << EOF
           # $PLUGIN_NAME v$VERSION
 
           $DESCRIPTION
@@ -132,14 +139,52 @@ jobs:
 
           See commit history for details.
           EOF
+          else
+            cat > release-notes.md << EOF
+          # $PLUGIN_NAME v$VERSION
 
-          # Create release with both plugin and skill zips
-          gh release create "$RELEASE_TAG" \
-            --title "$PLUGIN_NAME v$VERSION" \
-            --notes-file release-notes.md \
-            dist/$PLUGIN_NAME/${PLUGIN_NAME}-plugin-v${VERSION}.zip \
-            dist/$PLUGIN_NAME/${PLUGIN_NAME}-plugin-latest.zip \
-            dist/$PLUGIN_NAME/${PLUGIN_NAME}-skill-v${VERSION}.zip \
-            dist/$PLUGIN_NAME/${PLUGIN_NAME}-skill-latest.zip
+          $DESCRIPTION
+
+          ## Installation
+
+          ### Claude Code (Multiple Options)
+
+          **Option 1: Via Marketplace (Recommended)**
+          \`\`\`
+          /plugin marketplace add alecf/claude-skills
+          /plugin install $PLUGIN_NAME@alecf-claude-skills
+          \`\`\`
+
+          **Option 2: Manual Plugin Installation**
+          1. Download \`${PLUGIN_NAME}-plugin-v${VERSION}.zip\`
+          2. Extract to \`~/.claude/plugins/\`
+          3. Restart Claude Desktop
+
+          ## Files
+
+          - \`${PLUGIN_NAME}-plugin-*.zip\` - Full plugin (for Claude Code marketplace or manual plugin installation)
+
+          ## Changelog
+
+          See commit history for details.
+          EOF
+          fi
+
+          # Create release with available zips
+          if [ "$HAS_SKILLS" = "true" ]; then
+            gh release create "$RELEASE_TAG" \
+              --title "$PLUGIN_NAME v$VERSION" \
+              --notes-file release-notes.md \
+              dist/$PLUGIN_NAME/${PLUGIN_NAME}-plugin-v${VERSION}.zip \
+              dist/$PLUGIN_NAME/${PLUGIN_NAME}-plugin-latest.zip \
+              dist/$PLUGIN_NAME/${PLUGIN_NAME}-skill-v${VERSION}.zip \
+              dist/$PLUGIN_NAME/${PLUGIN_NAME}-skill-latest.zip
+          else
+            gh release create "$RELEASE_TAG" \
+              --title "$PLUGIN_NAME v$VERSION" \
+              --notes-file release-notes.md \
+              dist/$PLUGIN_NAME/${PLUGIN_NAME}-plugin-v${VERSION}.zip \
+              dist/$PLUGIN_NAME/${PLUGIN_NAME}-plugin-latest.zip
+          fi
         env:
           GH_TOKEN: ${{ github.token }}
